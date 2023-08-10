@@ -58,6 +58,11 @@ version = "2.0.1"
 dependencies = []
 
 [[package]]
+name = "sleitnick/table-util"
+version = "1.2.0"
+dependencies = []
+
+[[package]]
 name = "sleitnick/trove"
 version = "0.4.2"
 dependencies = []
@@ -75,4 +80,4 @@ dependencies = []
 [[package]]
 name = "zakary/pls-murder"
 version = "0.1.0"
-dependencies = [["Comm", "sleitnick/comm@0.3.1"], ["Component", "sleitnick/component@2.4.6"], ["Knit", "sleitnick/knit@1.5.1"], ["ProfileService", "surnautica/profileservice@1.0.0"], ["Roact", "roblox/roact@1.4.4"], ["RoactRodux", "roblox/roact-rodux@0.5.1"], ["Rodux", "roblox/rodux@3.0.0"], ["Trove", "sleitnick/trove@1.0.0"]]
+dependencies = [["Comm", "sleitnick/comm@0.3.1"], ["Component", "sleitnick/component@2.4.6"], ["Knit", "sleitnick/knit@1.5.1"], ["ProfileService", "surnautica/profileservice@1.0.0"], ["Promise", "evaera/promise@4.0.0"], ["Roact", "roblox/roact@1.4.4"], ["RoactRodux", "roblox/roact-rodux@0.5.1"], ["Rodux", "roblox/rodux@3.0.0"], ["TblUtil", "sleitnick/table-util@1.2.0"], ["Trove", "sleitnick/trove@1.0.0"]]
