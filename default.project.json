@@ -1,0 +1,35 @@
+{
+  "name": "Pls Murder",
+  "tree": {
+    "$className": "DataModel",
+
+    "ReplicatedStorage": {
+      "Source": {
+        "$path": "Client/ReplicatedStorage"
+      },
+      "Packages": {
+        "$path": "Packages"
+      }
+    },
+
+    "ServerScriptService": {
+      "Server": {
+        "$path": "Server/ServerScriptService"
+      }
+    },
+
+    "ServerStorage": {
+      "Source": {
+        "$path": "Server/ServerStorage"
+      }
+    },
+
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "Client": {
+          "$path": "Client/StarterPlayerScripts"
+        }
+      }
+    }
+  }
+}
