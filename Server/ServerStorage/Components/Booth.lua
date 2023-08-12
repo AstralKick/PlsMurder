@@ -16,6 +16,7 @@ function Booth:Construct()
     self.Prompt.HoldDuration = 2
     self.Prompt.RequiresLineOfSight = false
     self.Prompt.Parent = self.ClaimPart
+    self.Prompt.Style = Enum.ProximityPromptStyle.Custom
 
     DataService = Knit.GetService("DataService")
 end
