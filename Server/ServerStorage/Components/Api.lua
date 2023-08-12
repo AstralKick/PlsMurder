@@ -2,6 +2,8 @@ local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Packages = ReplicatedStorage.Packages
+local Component = require(Packages.Component)
+local Comm = require(Packages.Comm)
 local Promise = require(Packages.Promise)
 local TblUtil = require(Packages.TblUtil)
 
@@ -20,10 +22,6 @@ local Urls = {
 -- Game Id
 local GameId = 891852901
 
-local ApiRequests = {}
-
-ApiRequests.__index = ApiRequests
-
 local function MakeHttpRequest(Url: string)
     return Promise.new(function(Resolve, Reject)
         local Request = HttpService:RequestAsync({
@@ -40,15 +38,16 @@ local function MakeHttpRequest(Url: string)
     end)
 end
 
+local ApiRequests = Component.new{ Tag = "PLAYER" }
 
-function ApiRequests.new(Player: Player)
-    local self = setmetatable({}, ApiRequests)
-
-    self.Player = Player
+function ApiRequests:Construct()
+    self.Player = self.Instance
     self.Gamepasses = {}
     self.TShirts = {}
+end
 
-    return self
+function ApiRequests:Start()
+
 end
 
 function ApiRequests:GetItems()
@@ -91,13 +90,8 @@ function ApiRequests:GetItems()
     RecursiveGamepassCollection(Player)
 end
 
-function ApiRequests:GetLikes()
-    local UrlRequest = Urls.Likes:format(tostring(GameId))
-    MakeHttpRequest(UrlRequest):andThen(function(Result)
-        print(Result)
-    end):catch(function()
-        warn("Unable to fetch like data")
-    end)
+function ApiRequests:Stop()
+
 end
 
 return ApiRequests
