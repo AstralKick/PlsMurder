@@ -26,12 +26,16 @@ ApiRequests.__index = ApiRequests
 
 local function MakeHttpRequest(Url: string)
     return Promise.new(function(Resolve, Reject)
-        local Request = HttpService:GetAsync(Url, true)
-        if not Request then
+        local Request = HttpService:RequestAsync({
+        Url = Url,
+        Method = "GET",
+        })
+        
+        local RequestLength = Request.Body:len()
+        if not Request.Success then
             Reject()
         end
-        local RequestLength = Request:len()
-        Request = HttpService:JSONDecode(Request)
+        Request = HttpService:JSONDecode(Request.Body)
         Resolve(Request, RequestLength)
     end)
 end
@@ -66,7 +70,7 @@ function ApiRequests:GetItems()
         self.PageNumber = self.PageNumber or 1 
         self.GamepassUrlLength = self.GamepassUrlLength or math.huge
 
-        MakeHttpRequest(GamepassUrl):andThen(function(Result: {}, RequestLength: number)
+        MakeHttpRequest(GamepassUrl):andThen(function(Result: {["Data"]: {}}, RequestLength: number)
             for i,gamepass in ipairs (Result.Data.Items) do
                 if gamepass.Creator.Id ~= Player.UserId then continue end
                 self.Gamepasses[#self.Gamepasses+1] = TblUtil.Copy(gamepass, true)
@@ -78,8 +82,9 @@ function ApiRequests:GetItems()
                 RecursiveGamepassCollection(Player)
             end
 
-        end):catch(function()
+        end):catch(function(err)
             warn(Player.Name, " HAS NO GAMEPASSES")
+            warn(err)
         end):await()
     end
 
