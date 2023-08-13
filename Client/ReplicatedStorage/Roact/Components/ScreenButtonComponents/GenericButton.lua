@@ -88,7 +88,23 @@ function GenericButton:render()
                 isHovering = false,
             }
         end,
-    }, {})
+    }, {
+        Title = CreateElement("TextLabel", {
+            Size = UDim2.fromScale(1, 0.2),
+            Position = UDim2.fromScale(0, 0.9),
+            BackgroundTransparency = 1,
+            Font = Enum.Font.FredokaOne,
+            TextColor3 = Color3.fromRGB(255, 255, 255),
+            Text = self.props.Name,
+            TextScaled = true,
+            Rotation = -5,
+        }, {
+            UIStroke = CreateElement("UIStroke", {
+                Thickness = 1,
+                Color = Color3.fromRGB(0,0,0)
+            })
+        })
+    })
 end
 
 GenericButton = RoactRodux.connect(
