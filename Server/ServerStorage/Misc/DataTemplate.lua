@@ -1,20 +1,13 @@
+type DisplayType = nil | "BoothDisplay" | "Cabinet Display" | "MostWantedDisplay"
+
 return {
     Currency = 0,
     CurrentBooth = "Basic",
     BoothsOwned = {
         "Basic",
     },
-    PersonalBounties = {
-
-    },
-    ActiveBounties = {
-
-    },
-
-    -- THE DISPLAYS.
-    BoothDisplay = {
-        [1] = {
-            Id = 1,
+    BountyCards = {
+        ["GUID"] = {
             UserId = 6143375,
             Verified = false,
             StarCreator = false,
@@ -22,9 +15,11 @@ return {
             Message = "Get this noob",
             PaperType = "Basic",
             ItemId = 8825267035,
+            SessionLocked = false,
+            DisplayType = "Cabinet",
+            DisplayNumber = 1,
         },
-        [2] = {
-            Id = 2,
+        ["BOOTHDISPLAY"] = {
             UserId = 6143375,
             Verified = false,
             StarCreator = false,
@@ -32,80 +27,9 @@ return {
             Message = "Get this noob",
             PaperType = "Basic",
             ItemId = 8825267035,
-        },
-        [3] = {
-            Id = 3,
-            UserId = 6143375,
-            Verified = false,
-            StarCreator = false,
-            KillCount = 10,
-            Message = "Get this noob",
-            PaperType = "Basic",
-            ItemId = 8825267035,
-        },
-        [4] = {
-            Id = 4,
-            UserId = 6143375,
-            Verified = false,
-            StarCreator = false,
-            KillCount = 10,
-            Message = "Get this noob",
-            PaperType = "Basic",
-            ItemId = 8825267035,
-        },
-        [5] = {
-            Id = 5,
-            UserId = 6143375,
-            Verified = false,
-            StarCreator = false,
-            KillCount = 10,
-            Message = "Get this noob",
-            PaperType = "Basic",
-            ItemId = 8825267035,
-        },
-    },
-    CabinetDisplay = {
-        [1] = {
-            Id = 6,
-            UserId = 6143375,
-            Verified = false,
-            StarCreator = false,
-            KillCount = 10,
-            Message = "Get this noob",
-            PaperType = "Basic",
-            ItemId = 8825267035,
-        },
-        [2] = {
-            Id = 7,
-            UserId = 6143375,
-            Verified = false,
-            StarCreator = false,
-            KillCount = 10,
-            Message = "Get this noob",
-            PaperType = "Basic",
-            ItemId = 8825267035,
-        },
-        [3] = {
-            Id = 8,
-            UserId = 6143375,
-            Verified = false,
-            StarCreator = false,
-            KillCount = 10,
-            Message = "Get this noob",
-            PaperType = "Basic",
-            ItemId = 8825267035,
-        },
-    },
-    MostWantedDisplay = {
-        [1] = {
-            Id = 8,
-            UserId = 6143375,
-            Verified = false,
-            StarCreator = false,
-            KillCount = 10,
-            Message = "Get this noob",
-            PaperType = "Basic",
-            ItemId = 8825267035,
-        },
+            SessionLocked = false,
+            DisplayType = "Booth",
+            DisplayNumber = 1,
+        }
     },
 }

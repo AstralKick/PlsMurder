@@ -10,9 +10,9 @@ local BoothController = Knit.CreateController{
 function BoothController:KnitStart()
     BoothService = Knit.GetService("BoothService")
 
-    BoothService.ClaimBooth:Connect(function(BoothFolder: Folder, boothDisplay, cabinetDisplay, mostWantedDisplay)
+    BoothService.ClaimBooth:Connect(function(BoothFolder: Folder, BountyCards: {})
         local boothComponent = Booth:FromInstance(BoothFolder)
-        boothComponent:Claimed(boothDisplay, cabinetDisplay, mostWantedDisplay)
+        boothComponent:Claimed(BountyCards)
     end)
 
     BoothService.ClearBooth:Connect(function(BoothFolder: Folder)

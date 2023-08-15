@@ -39,28 +39,33 @@ function BoothService.Client:GetUpdatedItems(Player: Player, Booth: Folder)
     local boothData = BoothComponent:FromInstance(Booth)
     local owner = boothData.owner
     if not owner then return false end
-    local BoothDisplay = select(2, DataService:GetKey(owner, "BoothDisplay"):await())
-    local CabinetDisplay = select(2, DataService:GetKey(owner, "BoothDisplay"):await())
-    local MostWantedDisplay = select(2, DataService:GetKey(owner, "BoothDisplay"):await())
+    local BountyCards = select(2, DataService:GetKey(owner, "BountyCards"):await())
 
-    return true, BoothDisplay, CabinetDisplay, MostWantedDisplay
+    return true, BountyCards
 end
 
-function BoothService.Client:CreateBountyCard(Creator: Player, AttachedItem: number, KillCount: number, WantedFor: string)
+function BoothService.Client:CreateBountyCard(Creator: Player, AttachedItem: number, KillCount: number, WantedFor: string, PaperType: string)
     local StarCreator = if Creator:GetRankInGroup(4199740) > 0 then true else false
     local isVerified = Creator.HasVerifiedBadge
 
     local BountyCard = {
-        Player = Creator.UserId,
-        Pose = "Standard",
-        BountyValue = 0,
-        KillCount = KillCount,
+        UserId = Creator.UserId,
         Verified = isVerified,
-        StarCreator = StarCreator
+        StarCreator = StarCreator,
+        KillCount = KillCount,
+        Message = WantedFor,
+        PaperType = PaperType or "Basic",
+        ItemId = 8825267035,
+        SessionLocked = false,
+        DisplayType = nil,
+        DisplayNumber = nil,
     }
 
-    local CurrentPersonalBounties = select(2, DataService:GetKey(Creator, "PersonalBounties"):await())
-    table.insert(CurrentPersonalBounties, TblUtil.Copy(CurrentPersonalBounties, true))
+    local BountyCards = select(2, DataService:GetKey(Creator, "BountyCards"):await())
+    local UniqueId = HttpService:GenerateGUID(false)
+    BountyCards[UniqueId] = BountyCard
+
+    DataService:SetKey(Player, "BountyCards", BountyCards):await()
 
     return true
 end

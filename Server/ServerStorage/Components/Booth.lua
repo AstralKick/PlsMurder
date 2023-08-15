@@ -38,14 +38,12 @@ function Booth:Claim(Player: Player)
     self.Prompt.Enabled = false
 
     local currentBooth = select(2, DataService:GetKey(Player, "CurrentBooth"):await())
-    local cabinetDisplay = select(2, DataService:GetKey(Player, "CabinetDisplay"):await())
-    local mostWantedDisplay = select(2, DataService:GetKey(Player, "MostWantedDisplay"):await())
-    local boothDisplay = select(2, DataService:GetKey(Player, "BoothDisplay"):await())
+    local BountyCards = select(2, DataService:GetKey(Player, "BountyCards"):await())
     
     self:LoadBooth(currentBooth):andThen(function(newBooth: Model)
         newBooth.Parent = self.Instance
         newBooth:PivotTo(self.ClaimPart:GetPivot())
-        BoothService.Client.ClaimBooth:FireAll(self.Instance, boothDisplay, cabinetDisplay, mostWantedDisplay)
+        BoothService.Client.ClaimBooth:FireAll(self.Instance, BountyCards)
 
         -- Setup functions here ( to load the bounties ).
     end):catch(warn)

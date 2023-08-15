@@ -5,6 +5,7 @@ local Component = require(Packages.Component)
 local Knit = require(Packages.Knit)
 local Trove = require(Packages.Trove)
 local Roact = require(Packages.Roact) -- For mounting the SurfaceGuis.
+local TblUtil = require(Packages.TblUtil)
 local WantedComponent = require(ReplicatedStorage.Source.Roact.Components.Bounties.WantedComponent)
 
 
@@ -32,8 +33,19 @@ function Booth:GetOwner()
 end
 
 
-function Booth:UpdateItems(boothDisplay, cabinetDisplay, mostWantedDisplay)
-    for i,v in ipairs (boothDisplay) do
+function Booth:UpdateItems(BountyCards: {})
+    local boothDisplay = TblUtil.Filter(BountyCards, function(value, key)
+        return value.DisplayType == "Booth"
+    end)
+    local cabinetDisplay = TblUtil.Filter(BountyCards, function(value, key)
+        return value.DisplayType == "Cabinet"
+    end)
+    local mostWantedDisplay = TblUtil.Filter(BountyCards, function(value, key)
+        return value.DisplayType == "MostWanted"
+    end)
+
+    for GUID,v in pairs (boothDisplay) do
+        local i = v.DisplayNumber
         if not self.tree.BoothDisplay[i] then continue end
         local newElement = Roact.createElement(WantedComponent, {
             -- Props here.
@@ -44,11 +56,13 @@ function Booth:UpdateItems(boothDisplay, cabinetDisplay, mostWantedDisplay)
             Message = v.Message,
             PaperType = v.PaperType,
             ItemId = v.ItemId,
+            GUID = GUID,
             Adornee = self.Instance:FindFirstChild("Booth Display", true):FindFirstChild(i)
         })
         Roact.update(self.tree.BoothDisplay[i], newElement)
     end
-    for i,v in ipairs (cabinetDisplay) do
+    for GUID,v in pairs (cabinetDisplay) do
+        local i = v.DisplayNumber
         if not self.tree.CabinetDisplay[i] then continue end
         local newElement = Roact.createElement(WantedComponent, {
             -- Props here.
@@ -59,11 +73,13 @@ function Booth:UpdateItems(boothDisplay, cabinetDisplay, mostWantedDisplay)
             Message = v.Message,
             PaperType = v.PaperType,
             ItemId = v.ItemId,
+            GUID = GUID,
             Adornee = self.Instance:FindFirstChild("Display Cabinet", true):FindFirstChild(i)
         })
         Roact.update(self.tree.CabinetDisplay[i], newElement)
     end
-    for i,v in ipairs (mostWantedDisplay) do
+    for GUID,v in pairs (mostWantedDisplay) do
+        local i = v.DisplayNumber
         if not self.tree.MostWantedDisplay[i] then continue end
         local newElement = Roact.createElement(WantedComponent, {
             -- Props here.
@@ -74,6 +90,7 @@ function Booth:UpdateItems(boothDisplay, cabinetDisplay, mostWantedDisplay)
             Message = v.Message,
             PaperType = v.PaperType,
             ItemId = v.ItemId,
+            GUID = GUID,
             Adornee = self.Instance:FindFirstChild("Most Wanted", true):FindFirstChild(i)
         })
         Roact.update(self.tree.MostWantedDisplay[i], newElement)
@@ -81,8 +98,15 @@ function Booth:UpdateItems(boothDisplay, cabinetDisplay, mostWantedDisplay)
 end
 
 function Booth:Claimed(boothDisplay, cabinetDisplay, mostWantedDisplay)
+    local ClaimPart = self.Instance.ClaimPart
+    for _,Particle in ipairs (ClaimPart:GetDescendants()) do
+        if not Particle:IsA("ParticleEmitter") then continue end
+        Particle:Emit(Particle:GetAttribute("EmitCount"))
+    end
+
     self:GetOwner()
     self:UpdateItems(boothDisplay, cabinetDisplay, mostWantedDisplay)
+    
 
     self._trove = Trove.new()
 

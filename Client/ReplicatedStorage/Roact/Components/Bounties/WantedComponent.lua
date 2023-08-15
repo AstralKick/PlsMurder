@@ -13,7 +13,6 @@ function BountyCard:init()
 end
 
 function BountyCard:didMount()
-    print("rendered bounty card")
 end
 
 function BountyCard:render()
