@@ -1,18 +1,25 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Packages = ReplicatedStorage.Packages
 local Roact = require(Packages.Roact)
+local Knit = require(Packages.Knit)
 
 -- Methods
 local CreateElement = Roact.createElement
 local CreateRef = Roact.createRef
 
 local BountyCard = Roact.PureComponent:extend("BountyCard")
+local PurchaseService
+
+Knit.OnStart():andThen(function()
+    PurchaseService = Knit.GetService("PurchaseService")
+end):catch(warn)
 
 function BountyCard:init()
 
 end
 
 function BountyCard:didMount()
+
 end
 
 function BountyCard:render()
@@ -24,10 +31,14 @@ function BountyCard:render()
     local Message = self.props.Message
     local PaperType = self.props.PaperType
     local ItemId = self.props.ItemId
+    local BountyId = self.props.GUID
+    local owner = self.props.owner
+    
 
     return CreateElement("SurfaceGui", {
         ResetOnSpawn = false,
-        Adornee = Adornee
+        Adornee = Adornee,
+        AlwaysOnTop = true,
     }, {
         CreateElement("ImageLabel", {
         Size = UDim2.fromScale(1, 1),
@@ -81,7 +92,22 @@ function BountyCard:render()
                 BackgroundTransparency = 1,
                 Font = Enum.Font.Oswald,
                 Text = "5000" -- Price to be updated. PLACEHOLDER.
-            })
+            }),
+        }),
+        OverlayButton = CreateElement("TextButton", {
+            Size = UDim2.fromScale(1, 1),
+            Text = "",
+            BackgroundTransparency = 1,
+            [Roact.Event.Activated] = function()
+                PurchaseService:InitPurchase(owner, BountyId):andThen(function(Result, Message)
+                    -- Do result stuff here.
+                    if Result then
+                        print(Message)
+                    else
+                        print(Message)
+                    end
+                end)
+            end,
         })
       })
     })

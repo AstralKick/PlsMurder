@@ -33,13 +33,17 @@ function PurchaseService:KnitStart()
         local ItemUID = self.ActiveSessions[Player].BountyCardId
         local Seller = self.ActiveSessions[Player].Seller
         if isPurchased then
+            warn(`{Player.Name} has successfully made a purchase of the asset {AssetId}`)
             self.Client.SessionLocked:SetFor(Player, false)
             self:TransferCard(Seller, Player, ItemUID)
+            warn(`SESSION LOCK FOR {Player.Name} REMOVED`)
             
             -- SOMETHING HERE TO HANDLE INCREASE IN DONATION FIGURE-------
         else
+            warn(`{Player.Name} has failed a purchase of the asset {AssetId}`)
             self.Client.SessionLocked:SetFor(Player, false)
             self:RemoveLock(Seller, ItemUID)
+            warn(`SESSION LOCK FOR {Player.Name} REMOVED`)
         end
     end)
 
@@ -72,12 +76,12 @@ function PurchaseService:TransferCard(previousOwner: Player, newOwner: Player, C
 end
 
 function PurchaseService.Client:InitPurchase(Player: Player, Seller: Player, BountyCardId: number)
-    if self.SessionLocked:GetFor(Player) then return false end
+    if self.SessionLocked:GetFor(Player) then return false, `{Player.Name} is already session locked, must complete current transaction.` end
     
     local SellerStore = select(2, DataService:GetKey(Seller, "BountyCards"):await())
 
-    if not SellerStore[BountyCardId] then return false end
-    if SellerStore[BountyCardId].SessionLocked then return false end
+    if not SellerStore[BountyCardId] then return false, `Bounty Card doesn't exist in the seller's inventory` end
+    if SellerStore[BountyCardId].SessionLocked then return false, `Bounty Card is session locked, someone else is purchasing` end
 
     local ItemId = SellerStore[BountyCardId].ItemId
     self.SessionLocked:SetFor(Player, true)
@@ -94,7 +98,7 @@ function PurchaseService.Client:InitPurchase(Player: Player, Seller: Player, Bou
     MarketplaceService:PromptPurchase(Player, ItemId)
 
 
-    return true
+    return true, `{Player.Name} can purchase the item.`
 end
 
 return PurchaseService

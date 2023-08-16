@@ -57,6 +57,7 @@ function Booth:UpdateItems(BountyCards: {})
             PaperType = v.PaperType,
             ItemId = v.ItemId,
             GUID = GUID,
+            owner = self.owner,
             Adornee = self.Instance:FindFirstChild("Booth Display", true):FindFirstChild(i)
         })
         Roact.update(self.tree.BoothDisplay[i], newElement)
@@ -74,6 +75,7 @@ function Booth:UpdateItems(BountyCards: {})
             PaperType = v.PaperType,
             ItemId = v.ItemId,
             GUID = GUID,
+            owner = self.owner,
             Adornee = self.Instance:FindFirstChild("Display Cabinet", true):FindFirstChild(i)
         })
         Roact.update(self.tree.CabinetDisplay[i], newElement)
@@ -91,6 +93,7 @@ function Booth:UpdateItems(BountyCards: {})
             PaperType = v.PaperType,
             ItemId = v.ItemId,
             GUID = GUID,
+            owner = self.owner,
             Adornee = self.Instance:FindFirstChild("Most Wanted", true):FindFirstChild(i)
         })
         Roact.update(self.tree.MostWantedDisplay[i], newElement)

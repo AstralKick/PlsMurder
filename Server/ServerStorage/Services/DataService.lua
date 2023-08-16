@@ -207,6 +207,7 @@ function DataService:SetKey(Player: Player, Key: string, Value: any)
         if askedValue then
             askedValue = Value
             DataProfile:SetFor(Player, deepCopy(Profile.Data))
+            resolve()
         else
             reject()
         end
