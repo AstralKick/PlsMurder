@@ -6,9 +6,6 @@ local ServerStorage = game:GetService("ServerStorage") -- The service for access
 local Knit = require(ReplicatedStorage.Packages.Knit) -- External module for organizing code in a service-oriented architecture
 local ProfileService = require(ReplicatedStorage.Packages.ProfileService) -- External module for managing player profiles
 local Promise = require(ReplicatedStorage.Packages.Promise)
-local Comm = require(ReplicatedStorage.Packages.Comm)
-local DataComm = Comm.ServerComm.new(ReplicatedStorage, "DataComm")
-local DataProfile = DataComm:CreateProperty("Profile", {})
 
 -- Util files
 local Template = require(ServerStorage.Source.Misc.DataTemplate) -- Template for player profiles
@@ -18,6 +15,14 @@ local PurchaseIdLog = 50 -- Maximum number of purchase IDs to store
 local GameProfileStore = ProfileService.GetProfileStore("PlayerData", Template) -- Create a profile store for player data
 
 local Profiles = {} -- Table to store player profiles
+
+-- Create the DataService using Knit
+local DataService = Knit.CreateService{
+    Name = "DataService",
+    Client = {
+        Profile = Knit.CreateProperty({})
+    }
+}
 
 local function deepCopy(original)
 	local copy = {}
@@ -30,29 +35,6 @@ local function deepCopy(original)
 	return copy
 end
 
---- Function called when a player joins the game.
--- @param Player The player who joined the game.
-local function PlayerAdded(Player: Player)
-    local profile = GameProfileStore:LoadProfileAsync("Player_"..Player.UserId)
-
-    if profile then
-        profile:AddUserId(Player.UserId)
-        profile:Reconcile()
-        profile:ListenToRelease(function()
-            Profiles[Player] = nil
-            Player:Kick("Profile was loaded elsewhere")
-        end)
-
-        if Player:IsDescendantOf(Players) then
-            Profiles[Player] = profile
-            DataProfile:SetFor(Player, deepCopy(profile.Data))
-        else
-            profile:Release()
-        end
-    else
-        Player:Kick("Profile failed to load")
-    end
-end
 
 --- Function to check the purchase ID and grant the product.
 -- @param profile The player's profile.
@@ -157,32 +139,53 @@ local function processReceipt(receiptInfo)
     end
 end
 
--- Spawn the PlayerAdded function for existing players
-for _, Player in ipairs(Players:GetPlayers()) do
-    task.spawn(PlayerAdded, Player)
-end
 
 -- Set the processReceipt function as the handler for processing receipts
 MarketplaceService.ProcessReceipt = processReceipt
 
--- Connect the PlayerAdded function to the PlayerAdded event
-Players.PlayerAdded:Connect(PlayerAdded)
 
--- Connect the profile release function to the PlayerRemoving event
-Players.PlayerRemoving:Connect(function(Player: Player)
-    local profile = Profiles[Player]
-    if profile then
-        profile:Release()
+
+
+function DataService:KnitStart()
+    local function PlayerAdded(Player: Player)
+        local profile = GameProfileStore:LoadProfileAsync("Player_"..Player.UserId)
+    
+        if profile then
+            profile:AddUserId(Player.UserId)
+            profile:Reconcile()
+            profile:ListenToRelease(function()
+                Profiles[Player] = nil
+                Player:Kick("Profile was loaded elsewhere")
+            end)
+    
+            if Player:IsDescendantOf(Players) then
+                Profiles[Player] = profile
+                self.Client.Profile:SetFor(Player, deepCopy(profile.Data))
+            else
+                profile:Release()
+            end
+        else
+            Player:Kick("Profile failed to load")
+        end
     end
-end)
 
--- Create the DataService using Knit
-local DataService = Knit.CreateService{
-    Name = "DataService",
-    Client = {
+    -- Spawn the PlayerAdded function for existing players
+    for _, Player in ipairs(Players:GetPlayers()) do
+        task.spawn(PlayerAdded, Player)
+    end
 
-    }
-}
+    -- Connect the PlayerAdded function to the PlayerAdded event
+    Players.PlayerAdded:Connect(PlayerAdded)
+
+    -- Connect the profile release function to the PlayerRemoving event
+    Players.PlayerRemoving:Connect(function(Player: Player)
+        local profile = Profiles[Player]
+        if profile then
+            profile:Release()
+        end
+    end)
+end
+
 
 -- Function called when Knit starts the service
 
@@ -205,8 +208,8 @@ function DataService:SetKey(Player: Player, Key: string, Value: any)
         local askedValue = Profile.Data[Key]
 
         if askedValue then
-            askedValue = Value
-            DataProfile:SetFor(Player, deepCopy(Profile.Data))
+            Profile.Data[Key] = Value
+            self.Client.Profile:SetFor(Player, deepCopy(Profile.Data))
             resolve()
         else
             reject()

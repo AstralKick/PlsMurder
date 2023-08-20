@@ -101,7 +101,7 @@ function Booth:UpdateItems(BountyCards: {})
 end
 
 function Booth:Claimed(boothDisplay, cabinetDisplay, mostWantedDisplay)
-    local ClaimPart = self.Instance.ClaimPart
+    local ClaimPart = self.Instance:WaitForChild("ClaimPart")
     for _,Particle in ipairs (ClaimPart:GetDescendants()) do
         if not Particle:IsA("ParticleEmitter") then continue end
         Particle:Emit(Particle:GetAttribute("EmitCount"))

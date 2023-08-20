@@ -6,11 +6,25 @@ local TblUtil = require(Packages.TblUtil)
 
 local CardService = Knit.CreateService{
     Name = "CardService",
-    Client = {},
+    Client = {
+        FavouriteCard = Knit.CreateSignal(),
+        DeleteCard = Knit.CreateSignal(),
+        UnfavouriteCard = Knit.CreateSignal(),
+    },
 }
 
 function CardService:KnitStart()
+    DataService = Knit.GetService("DataService")
 
+    self.Client.FavouriteCard:Connect(function(Player: Player, GUID: string)
+        self:FavouriteCard(Player, GUID)
+    end)
+    self.Client.DeleteCard:Connect(function(Player: Player, GUID: string)
+        self:DeleteCard(Player, GUID)
+    end)
+    self.Client.UnfavouriteCard:Connect(function(Player: Player, GUID: string)
+        self:Unfavourite(Player, GUID)
+    end)
 end
 
 function CardService:AddCard(CardTable: {}, newCardTable: {})
@@ -20,9 +34,31 @@ function CardService:AddCard(CardTable: {}, newCardTable: {})
     return CardTable
 end
 
+function CardService:FavouriteCard(Player: Player, GUID: string)
+    local Cards = select(2, DataService:GetKey(Player, "BountyCards"):await())
+    Cards[GUID].Favourited = true
+    DataService:SetKey(Player, "BountyCards", Cards):await()
+end
+
+function CardService:Unfavourite(Player: Player, GUID: string)
+    local Cards = select(2, DataService:GetKey(Player, "BountyCards"):await())
+    Cards[GUID].Favourited = false
+    DataService:SetKey(Player, "BountyCards", Cards):await()
+end
+
+function CardService:DeleteCard(Player: Player, GUID: string)
+    local Cards = select(2, DataService:GetKey(Player, "BountyCards"):await())
+    local Cards2 = select(2, DataService:GetKey(Player, "CompletedBounties"):await())
+    Cards[GUID] = nil
+    Cards2[GUID] = nil
+    DataService:SetKey(Player, "BountyCards", Cards):await()
+    DataService:SetKey(Player, "CompletedBounties", Cards2):await()
+end
+
 function CardService:RemoveCard(CardTable: {}, BountyCardId: string)
     CardTable[BountyCardId] = nil
     return CardTable
 end
+
 
 return CardService

@@ -1,25 +1,35 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local SoundService = game:GetService("SoundService")
 local Packages = ReplicatedStorage.Packages
 local Roact = require(Packages.Roact)
 local Knit = require(Packages.Knit)
+local SFX = SoundService:WaitForChild("SFX")
 
 -- Methods
 local CreateElement = Roact.createElement
 local CreateRef = Roact.createRef
 
+local Images = require(ReplicatedStorage.Source.Roact.Data.Images)
+
 local BountyCard = Roact.PureComponent:extend("BountyCard")
 local PurchaseService
+local CardService
 
 Knit.OnStart():andThen(function()
     PurchaseService = Knit.GetService("PurchaseService")
+    CardService = Knit.GetService("CardService")
 end):catch(warn)
 
 function BountyCard:init()
-
+    self.Ref = CreateRef()
 end
 
 function BountyCard:didMount()
+
+end
+
+function BountyCard:willUnmount()
 
 end
 
@@ -35,16 +45,15 @@ function BountyCard:render()
     local BountyId = self.props.GUID
     local owner = self.props.owner
     
-
-    return CreateElement("SurfaceGui", {
-        ResetOnSpawn = false,
-        Adornee = Adornee,
-        AlwaysOnTop = true,
-        SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud,
-        PixelsPerStud = 100,
+    
+    return CreateElement("Frame", {
+        Size = self.props.CardSize,
+        BackgroundTransparency = 1,
+        ClipsDescendants = true,
+        [Roact.Ref] = self.Ref
     }, {
         CreateElement("ImageLabel", {
-        Size = UDim2.fromScale(1, 1),
+        Size = UDim2.fromScale(1, 0.8),
         BackgroundTransparency = 1,
         Image = "rbxassetid://14414161215"
     }, {
@@ -100,20 +109,42 @@ function BountyCard:render()
                 Text = "5000" -- Price to be updated. PLACEHOLDER.
             }),
         }),
-        OverlayButton = CreateElement("TextButton", {
-            Size = UDim2.fromScale(1, 1),
-            Text = "",
+      }),
+      -- Favourite/Delete Buttons
+      ButtonFrames = CreateElement("Frame", {
+        Size = UDim2.fromScale(1, 0.2),
+        Position = UDim2.fromScale(0, 0.8),
+        BackgroundTransparency = 1,
+      }, {
+        ListLayout = CreateElement("UIListLayout", {
+            FillDirection = Enum.FillDirection.Horizontal,
+            HorizontalAlignment = Enum.HorizontalAlignment.Center,
+            VerticalAlignment = Enum.VerticalAlignment.Center,
+            Padding = UDim.new(0.1, 0),
+        }),
+        FavouriteButton = CreateElement("ImageButton", {
+            Size = UDim2.fromScale(0.8, 0.8),
+            SizeConstraint = Enum.SizeConstraint.RelativeYY,
+            Image = Images.BountiesFrame.Favourite,
+            BackgroundTransparency = 1,
+            Visible = self.props.Favouriteable,
+            [Roact.Event.Activated] = function()
+                SFX.Sparkle:Play()
+                CardService.FavouriteCard:Fire(BountyId)
+            end,
+        }),
+        DeleteButton = CreateElement("ImageButton", {
+            Size = UDim2.fromScale(0.8, 0.8),
+            SizeConstraint = Enum.SizeConstraint.RelativeYY,
+            Image = Images.BountiesFrame.Delete,
             BackgroundTransparency = 1,
             [Roact.Event.Activated] = function()
-                if owner == Players.LocalPlayer then return end
-                PurchaseService:InitPurchase(owner, BountyId):andThen(function(Result, Message)
-                    -- Do result stuff here.
-                    if Result then
-                        print(Message)
-                    else
-                        print(Message)
-                    end
-                end)
+                SFX.Delete:Play()
+                if self.props.Favourited then
+                    CardService.UnfavouriteCard:Fire(BountyId)
+                else
+                    CardService.DeleteCard:Fire(BountyId)
+                end
             end,
         })
       })

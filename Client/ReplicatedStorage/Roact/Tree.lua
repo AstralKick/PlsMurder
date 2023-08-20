@@ -33,6 +33,11 @@ local MainUI = CreateElement("ScreenGui", {ResetOnSpawn = false}, {
     }, {
         Screen = CreateElement(Components.ScreenButtons),
     }), 
+    BountyFrame = CreateElement(RoactRodux.StoreProvider, {
+        store = Stores.BountyFrame,
+    }, {
+        BountyFrame = CreateElement(Components.BountyFrame),
+    })
     -------------------------------------------------------
 })
 

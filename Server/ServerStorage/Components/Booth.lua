@@ -19,6 +19,8 @@ function Booth:Construct()
     self.Prompt.Parent = self.ClaimPart
     self.Prompt.Style = Enum.ProximityPromptStyle.Custom
 
+    self.loc = self.Instance:GetAttribute("Loc") or math.huge
+
     BoothService = Knit.GetService("BoothService")
     DataService = Knit.GetService("DataService")
 end
@@ -51,7 +53,7 @@ function Booth:Claim(Player: Player)
     self._trove:Add(function()
         -- Cleanup
         self.owner = nil
-        self:AdjustTheme("Basic")
+        self:AdjustTheme("ClaimSign")
         self.Prompt.Enabled = true
         BoothService.Client.ClearBooth:FireAll(self.Instance)
     end)

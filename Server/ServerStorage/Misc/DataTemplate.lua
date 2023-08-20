@@ -1,4 +1,4 @@
-type DisplayType = nil | "BoothDisplay" | "Cabinet Display" | "MostWantedDisplay"
+type DisplayType = nil | "BoothDisplay" | "CabinetDisplay" | "MostWantedDisplay"
 
 return {
     Currency = 0,
@@ -7,7 +7,7 @@ return {
         "Basic",
     },
     BountyCards = {
-        ["GUID"] = {
+        --[[["GUID"] = {
             UserId = 6143375,
             Verified = false,
             StarCreator = false,
@@ -30,6 +30,20 @@ return {
             SessionLocked = false,
             DisplayType = "Booth",
             DisplayNumber = 1,
-        }
+        }]]
     },
+    CompletedBounties = {
+        --[[["NEWDISPLAY"] = {
+            UserId = 6143375,
+            Verified = false,
+            StarCreator = false,
+            KillCount = 10,
+            Message = "Get this noob",
+            PaperType = "Basic",
+            ItemId = 8825267035,
+            SessionLocked = false,
+            DisplayType = "Booth",
+            DisplayNumber = 1,
+        }]]
+    }
 }

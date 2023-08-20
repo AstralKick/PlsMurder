@@ -73,6 +73,9 @@ function GenericButton:render()
                 buttonName = self.props.Name,
                 isDown = false,
             }
+            Stores[`{self.props.Name}Frame`]:dispatch{
+                type = "Open"
+            }
         end,
         [Roact.Event.MouseEnter] = function()
             Stores.ButtonStore:dispatch{

@@ -9,6 +9,7 @@ local BoothController = Knit.CreateController{
 
 function BoothController:KnitStart()
     BoothService = Knit.GetService("BoothService")
+    DataService = Knit.GetService("DataService")
 
     BoothService.ClaimBooth:Connect(function(BoothFolder: Folder, BountyCards: {})
         local boothComponent = Booth:FromInstance(BoothFolder)

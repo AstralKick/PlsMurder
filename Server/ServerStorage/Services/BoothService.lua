@@ -1,4 +1,5 @@
 local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerStorage = game:GetService("ServerStorage")
 local Packages = ReplicatedStorage.Packages
@@ -19,6 +20,26 @@ local BoothService = Knit.CreateService{
 
 function BoothService:KnitStart()
     DataService = Knit.GetService("DataService")
+
+    local function setBooth(Player: Player)
+        local allBooths = BoothComponent:GetAll()
+        local SortedBooths = {}
+    
+        for _,Comp in pairs (allBooths) do
+            SortedBooths[Comp.loc] = Comp
+        end
+
+        for _,Comp in ipairs (SortedBooths) do
+            if Comp.owner then continue end
+            Comp:Claim(Player)
+            break
+        end
+    end
+
+    for i,v in ipairs (Players:GetPlayers()) do
+        setBooth(v)
+    end
+    Players.PlayerAdded:Connect(setBooth)
 end
 
 function BoothService:Claimed(Player: Player)
