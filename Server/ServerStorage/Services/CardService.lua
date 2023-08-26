@@ -3,6 +3,7 @@ local Packages = ReplicatedStorage.Packages
 local Knit = require(Packages.Knit)
 local HttpService = game:GetService("HttpService")
 local TblUtil = require(Packages.TblUtil)
+local Promise = require(Packages.Promise)
 
 local CardService = Knit.CreateService{
     Name = "CardService",
@@ -10,6 +11,7 @@ local CardService = Knit.CreateService{
         FavouriteCard = Knit.CreateSignal(),
         DeleteCard = Knit.CreateSignal(),
         UnfavouriteCard = Knit.CreateSignal(),
+        CardProperty = Knit.CreateProperty({})
     },
 }
 
