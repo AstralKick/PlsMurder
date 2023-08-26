@@ -13,6 +13,7 @@ local CardService = Knit.CreateService{
         UnfavouriteCard = Knit.CreateSignal(),
         CardProperty = Knit.CreateProperty({})
     },
+    PlayerWantedLevels = {},
 }
 
 function CardService:KnitStart()
@@ -27,6 +28,11 @@ function CardService:KnitStart()
     self.Client.UnfavouriteCard:Connect(function(Player: Player, GUID: string)
         self:Unfavourite(Player, GUID)
     end)
+end
+
+function CardService:UpdateWantedLevel(UserId: number, WantedLevel: number)
+    self.PlayerWantedLevels[UserId] = WantedLevel
+    self.Client.CardProperty:Set(self.PlayerWantedLevels)
 end
 
 function CardService:AddCard(CardTable: {}, newCardTable: {})

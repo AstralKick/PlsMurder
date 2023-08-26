@@ -3,7 +3,7 @@ local Packages = ReplicatedStorage.Packages
 local Promise = require(Packages.Promise)
 local HttpService = game:GetService("HttpService")
 
-local RateLimit = 300 -- 300 requests per minute.
+local RateLimit = 350 -- 300 requests per minute.
 local UpdateTimeAllowed = 120
 
 type methods = "POST" | "PUT" | "GET" | "PATCH" 
@@ -66,10 +66,34 @@ local function GetAsync(URL: string)
     end)
 end
 
-function http:GetAsync(URL: string)
+local function noCacheGetAsync(URL: string)
+    return Promise.new(function(resolve, reject)
+        if RateLimit == 0 then return reject("Rate limit exceeded, retrying in 60") end
+        RateLimit -= 1
+        task.delay(60, ChangeRate)
+
+        local Response = HttpService:RequestAsync{
+            Url = URL,
+            Method = 'GET',
+        }
+
+        if Response.Success then
+            CachedResults[URL] = {
+                Response = Response,
+                Time = os.time()
+            }
+            return resolve(Response)
+        else
+            return reject(Response)
+        end
+    end)
+end
+
+
+function http:GetAsync(URL: string, avoidCache: boolean)
     assert(typeof(URL) == "string", "The URL is not a string, so this request has errored.")
 
-    return GetAsync(URL)
+    return if not avoidCache then GetAsync(URL) else Promise.retryWithDelay(noCacheGetAsync, 15, 60, URL)
 end
 
 function http:SetAsync(URL: string, Data: string | {})
