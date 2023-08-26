@@ -14,16 +14,44 @@ local CachedResults = {
 
 }
 
-local function request(URL: string, Method: methods, headers: {}?, Body: {}?)
-    return Promise.new(function(resolve, reject)
-        if RateLimit == 0 then return reject("Rate limit exceeded, retrying in 60") end
-        
+local function ChangeRate()
+    RateLimit += 1
+end
+
+local function SetAsync(URL: string, Data: {} | string)
+    return Promise.new(function(Resolve, Reject)
+        if RateLimit == 0 then return Reject("Rate limit exceeded, retrying in 60") end
         RateLimit -= 1
+        task.delay(60, ChangeRate)
+
         local Response = HttpService:RequestAsync{
             Url = URL,
-            Method = Method,
-            Headers = headers,
-            Body = HttpService:JSONEncode(Body) or "",
+            Method = 'PUT',
+            Body = Data
+        }
+
+        if Response.Success then
+            return Resolve(Response)
+        else
+            return Reject(Response)
+        end
+    end)
+end
+
+local function GetAsync(URL: string)
+    return Promise.new(function(resolve, reject)
+        if RateLimit == 0 then return reject("Rate limit exceeded, retrying in 60") end
+        if CachedResults[URL] then 
+            if os.time() - CachedResults[URL].Time < UpdateTimeAllowed then
+                return resolve(CachedResults[URL].Response)
+            end
+        end
+        RateLimit -= 1
+        task.delay(60, ChangeRate)
+
+        local Response = HttpService:RequestAsync{
+            Url = URL,
+            Method = 'GET',
         }
 
         if Response.Success then
@@ -33,16 +61,21 @@ local function request(URL: string, Method: methods, headers: {}?, Body: {}?)
             }
             return resolve(Response)
         else
-            return reject("Response failure")
+            return reject(Response)
         end
     end)
 end
 
-function http:RequestAsync(URL: string, Method: methods, headers: {}?, Body: {}?)
-    assert(typeof(Method) == "string", "A string hasn't been passed through, so this request will not be run.")
-    assert(typeof(URL) == "string", "The URL is not a string, so this request has been errored.")
+function http:GetAsync(URL: string)
+    assert(typeof(URL) == "string", "The URL is not a string, so this request has errored.")
 
-    return Promise.retryWithDelay(request, 5, 60, URL, Method, headers, Body)
+    return GetAsync(URL)
+end
+
+function http:SetAsync(URL: string, Data: string | {})
+    assert(typeof(URL) == "string", "The URL is not a string, so this request has errored.")
+
+    return SetAsync(URL, Data)
 end
 
 return http

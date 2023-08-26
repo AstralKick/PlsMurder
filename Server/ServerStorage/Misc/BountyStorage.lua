@@ -1,18 +1,12 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local HttpService = game:GetService("HttpService")
+local ServerStorage = game:GetService("ServerStorage")
 local Packages = ReplicatedStorage.Packages
 local Promise = require(Packages.Promise)
 local Knit = require(Packages.Knit)
+local HttpService = require(ServerStorage.Source.Misc.HttpService)
 
-
-local Requests = {
-    "https://pls-murder-default-rtdb.firebaseio.com/users/6143375.json", -- Get player bounty number (returns number in string format)
-    "https://pls-murder-default-rtdb.firebaseio.com/users/6143375.json", -- PUT with number (updates number just send the number as a string)
-}
 
 Knit.OnStart():await()
-
-local BountiesSaved = {}
 
 local BountyStore = {}
 
@@ -21,7 +15,22 @@ function BountyStore:UpdateBounty()
 end
 
 function BountyStore:GetBounty(UserId: number)
+    local Request = HttpService:GetAsync(`https://pls-murder-default-rtdb.firebaseio.com/users/{UserId}.json`)
 
+    Request:andThen(function(Response)
+        local BountyAmount = tonumber(Response.Body)
+        return BountyAmount
+    end, function(fail)
+        return 0
+    end):await()
+end
+
+function BountyStore:IncreaseBounty(UserId: number, Amount: number)
+    local Bounty = self:GetBounty(UserId)
+    Amount += Bounty
+    HttpService:SetAsync(`https://pls-murder-default-rtdb.firebaseio.com/users/{UserId}.json`, tostring(Amount)):andThen(function(Result)
+        print(Result)
+    end):catch(warn)
 end
 
 return BountyStore
