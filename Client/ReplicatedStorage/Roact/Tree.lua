@@ -37,6 +37,11 @@ local MainUI = CreateElement("ScreenGui", {ResetOnSpawn = false}, {
         store = Stores.BountyFrame,
     }, {
         BountyFrame = CreateElement(Components.BountyFrame),
+    }),
+    CreateCardFrame = CreateElement(RoactRodux.StoreProvider, {
+        store = Stores.CreateCard
+    }, {
+        CreateCardFrame = CreateElement(Components.CreateCardFrame)
     })
     -------------------------------------------------------
 })

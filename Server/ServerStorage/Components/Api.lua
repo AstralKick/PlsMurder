@@ -3,9 +3,9 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Packages = ReplicatedStorage.Packages
 local Component = require(Packages.Component)
-local Comm = require(Packages.Comm)
 local Promise = require(Packages.Promise)
 local TblUtil = require(Packages.TblUtil)
+local Knit = require(Packages.Knit)
 
 
 --@param This is the subcategories for the catalog.
@@ -44,10 +44,12 @@ function ApiRequests:Construct()
     self.Player = self.Instance
     self.Gamepasses = {}
     self.TShirts = {}
+
 end
 
 function ApiRequests:Start()
-
+    PlayerService = Knit.GetService("PlayerService")
+    self:GetItems()
 end
 
 function ApiRequests:GetItems()
@@ -88,6 +90,7 @@ function ApiRequests:GetItems()
     end
 
     RecursiveGamepassCollection(Player)
+    PlayerService:Update(Player, self.Gamepasses, self.TShirts)
 end
 
 function ApiRequests:Stop()

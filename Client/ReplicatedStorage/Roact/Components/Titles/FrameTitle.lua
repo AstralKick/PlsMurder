@@ -15,6 +15,7 @@ local function Title(props)
       Text = props.Title,
       Rotation = -5,
       BackgroundTransparency = 1,
+      TextWrapped = false
     }, {
         UIStroke = CreateElement("UIStroke", {
             Thickness = 1,
