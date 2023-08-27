@@ -11,7 +11,7 @@ local function Reducer(state,action)
         Gamepasses = {},
         TShirts = {},
         CardCreation = {
-            PaperSkin = "Basic",
+            Message = "default noob",
             ProductId = 1,
             KillCount = 10,
         }
@@ -23,6 +23,10 @@ local function Reducer(state,action)
         state.Gamepasses = action.Gamepasses
     elseif action.type == "Set ProductId" then
         state.CardCreation.ProductId = action.ProductId
+    elseif action.type == "Set KillCount" then
+        state.CardCreation.KillCount = action.KillCount
+    elseif action.type == "Set Message" then
+        state.CardCreation.Message = action.Message
     end
 
     return state

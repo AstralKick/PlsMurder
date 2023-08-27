@@ -14,28 +14,27 @@ for _,Store in ipairs (RoduxStores:GetChildren()) do
     Stores[Store.Name] = require(Store)
 end
 
-local RobuxItems = Roact.PureComponent:extend("RobuxItems")
+local KillCounts = Roact.PureComponent:extend("KillCounts")
 
-function RobuxItems:init(props)
+function KillCounts:init(props)
     self.Ref = Roact.createRef()
 end
 
-function RobuxItems:didMount()
-    self.Ref:getValue():TweenSize(UDim2.fromScale(0.9, 0.9), Enum.EasingDirection.Out, Enum.EasingStyle.Back, 0.5, true)
+function KillCounts:didMount()
+
 end
 
-function RobuxItems:render()
-    local AssetId = self.props.AssetId
-    local Price = self.props.Price
+function KillCounts:render()
+    local KillCount = self.props.KillCount
 
     return CreateElement("ImageLabel", {
-        Size = UDim2.fromScale(0, 0),
+        Size = UDim2.fromScale(0.9, 0.9),
         SizeConstraint = Enum.SizeConstraint.RelativeYY,
         Image = Images.AddCoinsFrame.PurchaseButton,
         ScaleType = Enum.ScaleType.Slice,
         SliceCenter = Rect.new(Vector2.new(50, 50), Vector2.new(50, 50)),
         BackgroundTransparency = 1,
-        LayoutOrder = Price,
+        LayoutOrder = KillCount,
         [Roact.Ref] = self.Ref
     }, {
         SetButton = CreateElement("TextButton", {
@@ -45,16 +44,16 @@ function RobuxItems:render()
             TextColor3 = Color3.fromRGB(255, 255, 255),
             TextScaled = true,
             Font = Enum.Font.FredokaOne,
-            Text = ` {Price}`,
+            Text = `{KillCount} Kills`,
             BackgroundTransparency = 1,
             [Roact.Event.Activated] = function()
                 Stores.CreateCard:dispatch{
-                    type = "Set ProductId",
-                    ProductId = AssetId
+                    type = "Set KillCount",
+                    KillCount = KillCount
                 }
             end,
         }),
     })
 end
 
-return RobuxItems
+return KillCounts

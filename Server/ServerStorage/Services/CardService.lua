@@ -68,5 +68,31 @@ function CardService:RemoveCard(CardTable: {}, BountyCardId: string)
     return CardTable
 end
 
+function CardService:CreateCard(Player: Player, CardTable: table)
+    local Cards = select(2, DataService:GetKey(Player, "BountyCards"):await())
+
+    local CardTableNew = {
+        UserId = Player.UserId,
+        Verified = Player.HasVerifiedBadge,
+        StarCreator = Player:IsInGroup(4199740) or false,
+        KillCount = CardTable.KillCount,
+        Message = CardTable.Message,
+        PaperType = "Basic", -- TBC?
+        ItemId = CardTable.ProductId,
+        SessionLocked = false,
+        DisplayType = nil,
+        DisplayNumber = nil
+    }
+
+    local newTbl = self:AddCard(Cards, CardTableNew)
+
+    DataService:SetKey(Player, "BountyCards", newTbl):await()
+end
+
+function CardService.Client:CreateCard(Player: Player, CardTabl: {})
+    self.Server:CreateCard(Player, CardTabl)
+    return true
+end
+
 
 return CardService
