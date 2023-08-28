@@ -14,7 +14,8 @@ local function Reducer(state,action)
             Message = "default noob",
             ProductId = 1,
             KillCount = 10,
-        }
+        },
+        Open = false,
     }
 
     if action.type == "Update TShirts" then
@@ -27,6 +28,10 @@ local function Reducer(state,action)
         state.CardCreation.KillCount = action.KillCount
     elseif action.type == "Set Message" then
         state.CardCreation.Message = action.Message
+    elseif action.type == "Open" then
+        state.Open = true
+    elseif action.type == "Close" then
+        state.Open = false
     end
 
     return state

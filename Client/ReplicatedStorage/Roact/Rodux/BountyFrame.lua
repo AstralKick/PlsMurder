@@ -16,6 +16,8 @@ local function Reducer(state,action)
         state.Open = not state.Open
     elseif action.type == "Profile Update" then
         state.Profile = action.Profile
+    elseif action.type == "Close" then
+        state.Open = false
     end
 
     return state

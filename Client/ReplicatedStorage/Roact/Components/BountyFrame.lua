@@ -16,6 +16,17 @@ local CloseButton = require(ReplicatedStorage.Source.Roact.Components.ScreenButt
 local FrameTitle = require(ReplicatedStorage.Source.Roact.Components.Titles.FrameTitle)
 local WantedComponent = require(ReplicatedStorage.Source.Roact.Components.Bounties.WantedComponent2)
 
+
+-- Constants
+local RoduxStores = ReplicatedStorage.Source.Roact.Rodux
+
+-- RODUX STORES:
+local Stores = {}
+for _,Store in ipairs (RoduxStores:GetChildren()) do
+    Stores[Store.Name] = require(Store)
+end
+
+
 local function InnerFrame(props)
     local BountyCards = props.BountyCards or {}
     local Children = {}
@@ -26,6 +37,33 @@ local function InnerFrame(props)
         HorizontalAlignment = props.HorizontalAlignment,
         VerticalAlignment = props.VerticalAlignment,
     }) 
+    if props.PlusCard then
+        Children['PlusCard'] = CreateElement('Frame', {
+            Size = UDim2.fromScale(0.2, 0.95),
+            BackgroundColor3 = Color3.fromRGB(0, 0, 0),
+            LayoutOrder = -1000,
+        }, {
+            UICorner = CreateElement('UICorner', {
+                CornerRadius = UDim.new(0.1, 0),
+            }),
+            PlusButton = CreateElement('TextButton', {
+                Size = UDim2.fromScale(1, 1),
+                BackgroundTransparency = 1,
+                TextScaled = true,
+                Font = Enum.Font.FredokaOne,
+                Text = "+",
+                TextColor3 = Color3.fromRGB(255, 255, 255),
+                [Roact.Event.Activated] = function()
+                    Stores.BountyFrame:dispatch{
+                        type = 'Close',
+                    }
+                    Stores.CreateCard:dispatch{
+                        type = 'Open'
+                    }
+                end,
+            })
+        })
+    end
 
     for GUID, CardDetails in pairs (BountyCards) do
         Children[GUID] = CreateElement(WantedComponent, {
@@ -74,15 +112,6 @@ local function Title(props)
         BackgroundTransparency = 1,
         LayoutOrder = props.LayoutOrder,
     })
-end
-
--- Constants
-local RoduxStores = ReplicatedStorage.Source.Roact.Rodux
-
--- RODUX STORES:
-local Stores = {}
-for _,Store in ipairs (RoduxStores:GetChildren()) do
-    Stores[Store.Name] = require(Store)
 end
 
 
@@ -211,6 +240,7 @@ function BountyFrame:render()
                     CardSize = UDim2.fromScale(0.2, 0.95),
                     HorizontalAlignment = Enum.HorizontalAlignment.Left,
                     VerticalAlignment = Enum.VerticalAlignment.Center,
+                    PlusCard = true,
                 }),
             }),
             -- Completed Frame

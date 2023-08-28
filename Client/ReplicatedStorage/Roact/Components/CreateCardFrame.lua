@@ -92,7 +92,7 @@ function CreateCardFrame:render()
         ScaleType = Enum.ScaleType.Slice,
         SliceCenter = Rect.new(Vector2.new(50, 50), Vector2.new(50, 50)),
         BackgroundTransparency = 1,
-        Visible = false, -- tbc
+        Visible = self.props.Open, -- tbc
     }, {
         Title = CreateElement(FrameTitle, {
             Title = "create card",
@@ -229,6 +229,9 @@ function CreateCardFrame:render()
                 Text = "Create Card",
                 [Roact.Event.Activated] = function()
                     Knit.GetService("CardService"):CreateCard(self.props.CardCreation)
+                    Stores.CreateCard:dispatch{
+                        type = 'Close'
+                    }
                 end,
             })
         })
@@ -246,7 +249,8 @@ CreateCardFrame = RoactRodux.connect(
         return {
             Gamepasses = state.Gamepasses,
             TShirts = state.TShirts,
-            CardCreation = state.CardCreation
+            CardCreation = state.CardCreation,
+            Open = state.Open
         }
     end,
     function(dispatch)
