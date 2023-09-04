@@ -1,7 +1,17 @@
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Packages = ReplicatedStorage.Packages
 local Rodux = require(Packages.Rodux)
 local TblUtil = require(Packages.TblUtil)
+local SocialService = game:GetService('SocialService')
+local Player = Players.LocalPlayer
+
+local function CanSendInvite(SendPlayer: Player)
+    local Success,CanSend = pcall(function()
+        return SocialService:CanSendGameInviteAsync(SendPlayer)
+    end)
+    return Success and CanSend
+end
 
 local defaultTable = {
     Hover = false,
@@ -23,7 +33,16 @@ local function Reducer(state, action)
 
     if action.type ==  "buttonDown" then
         local buttonName = action.buttonName
-        state[buttonName].MouseDown = action.isDown
+        if buttonName == 'Invite' then
+            local canInvite = CanSendInvite(Player)
+            if canInvite then
+                local Success, Err = pcall(function()
+                    SocialService:PromptGameInvite(Player)
+                end)
+            end
+        else
+            state[buttonName].MouseDown = action.isDown
+        end
     elseif action.type == "hover" then
         local buttonName = action.buttonName
         state[buttonName].Hover = action.isHovering
