@@ -107,11 +107,23 @@ function Booth:Claimed(boothDisplay, cabinetDisplay, mostWantedDisplay)
         Particle:Emit(Particle:GetAttribute("EmitCount"))
     end
 
+    self._trove = Trove.new()
     self:GetOwner()
+    if self.owner == Knit.Player then
+        local ProxPrompt = Instance.new('ProximityPrompt')
+        ProxPrompt.Name = 'PlayerPrompt'
+        ProxPrompt.ActionText = "Edit"
+        ProxPrompt.Parent = self.Instance.ClaimPart
+        ProxPrompt.RequiresLineOfSight = false
+        ProxPrompt.MaxActivationDistance = 15
+        ProxPrompt.Triggered:Connect(function(Player)
+            print('customise should load')
+        end)
+        self._trove:Add(ProxPrompt)
+    end
     self:UpdateItems(boothDisplay, cabinetDisplay, mostWantedDisplay)
     
 
-    self._trove = Trove.new()
 
 
     self._trove:Add(function()
